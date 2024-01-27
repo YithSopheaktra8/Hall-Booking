@@ -9,10 +9,10 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-//
+
         Integer row = validateInputNumber("> Config total rows in hall : ","only number from 1-9",input);
         Integer col = validateInputNumber("> Config total cols in hall : ","only number from 1-9",input);
-//
+
         String[][] morningHall = new String[row][col];
         String[][] afternoonHall = new String[row][col];
         String[][] nightHall = new String[row][col];
@@ -20,27 +20,21 @@ public class Main {
         initHall(afternoonHall);
         initHall(nightHall);
 
-        displayOneHall(morningHall);
-        chooseSeat(morningHall);
-        displayOneHall(morningHall);
 
 
-//        Character ch;
-//        do {
-//            mainMenu();
-//            ch = validateInputChar("Choose option : ","wrong command",input);
-//            switch (ch){
-//                case 'a' -> System.out.println("booking");
-////                case 'b' -> booking();
-//                case 'c' -> showTimeMenu();
-//                case 'f' -> System.exit(0);
-//            }
-//
-//
-//        }while (!(ch.equals('f')));
+        Character ch;
+        do {
+            mainMenu();
+            ch = validateInputChar("Choose option : ","wrong command",input);
+            switch (ch){
+                case 'a' -> booking(morningHall,afternoonHall,nightHall);
+                case 'b' -> showAllHall(morningHall,afternoonHall,nightHall);
+                case 'c' -> showTimeMenu();
+                case 'f' -> System.exit(0);
+            }
 
+        }while (!(ch.equals('f')));
 
-        
     }
 
     //  validate char
@@ -78,15 +72,10 @@ public class Main {
 //    Booking seat
     public static void booking(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
         Scanner input = new Scanner(System.in);
-
-//        do {
-//            showTimeMenu();
-//            String[][] hall = getHall(morningHall,afternoonHall,nightHall);
-//            displayHall(hall,'A');
-//
-//        }while ()
-
-
+        showTimeMenu();
+        String[][] hall = getHall(morningHall,afternoonHall,nightHall);
+        displayOneHall(hall);
+        validateBooking(hall);
     }
 
 //  getOneHall
@@ -116,7 +105,7 @@ public class Main {
         for (int i = 0; i<hall.length; i++){
             for (int j= 0; j<hall[i].length; j++){
                 char aphabet = (char) ('A' + i ) ;
-                System.out.print("|"+aphabet+"-"+(1+j)+"::"+hall[i][j]+"|\t");
+                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+hall[i][j]+"|\t");
             }
             System.out.println();
         }
@@ -124,16 +113,18 @@ public class Main {
     }
 
 //   chooseSeat
-    public static void chooseSeat(String[][] hall){
+    public static String[] singleAndMultipleSelect(String[][] hall){
         Scanner input = new Scanner(System.in);
-        char c = 67;
-        int number = 2;
         String[] stringArray = new String[0];
         // Input strings dynamically
         while (true) {
-            System.out.print("Enter a string (press Enter to finish): ");
+            System.out.print("""
+                    # INSTRUCTION
+                    # SINGLE : C-1
+                    # Multiple (Separate by comma (,)) : C-1,C-2
+                    """);
+            System.out.print("> Please select available seat : ");
             String userInput = input.nextLine();
-
             // Split the input string by commas
             String[] substrings = userInput.split(",");
 
@@ -150,43 +141,107 @@ public class Main {
                 break;
             }
         }
+        return stringArray;
+    }
 
-
-
-        for (int i = 0; i<hall.length; i++){
-            for (int j= 0; j<hall[i].length; j++){
-                char aphabet = (char) ('A' + i ) ;
-                if(aphabet == c && number == j){
-                    System.out.println("founded"+" row : "+i+ " cols : "+j);
-                    hall[i][j] = "BO";
+    // validate booking
+    public static void validateBooking(String[][] hall) {
+        Scanner scanner = new Scanner(System.in);
+        String[] userInput = singleAndMultipleSelect(hall);
+        boolean isBook = false;
+        for (String input : userInput) {
+            String getUserInput = input.replaceAll("-", "");
+            Integer number = Integer.parseInt(getUserInput.replaceAll("[^0-9]", ""));
+            char letter = getUserInput.replaceAll("[^a-zA-Z]", "").charAt(0);
+            for (int i = 0; i < hall.length; i++) {
+                for (int j = 0; j < hall[i].length; j++) {
+                    char aphabet = (char) ('A' + i);
+                    if (aphabet == letter && (number -1 ) == j) {
+                        if (hall[i][j].equals("BO")) {
+                            isBook = false;
+                            break;
+                        } else {
+                            hall[i][j] = "BO";
+                            isBook = true;
+                        }
+                    }
                 }
             }
         }
+        if (isBook) {
+            char isSure = validateInputChar("Are you sure to book? (Y/N)", "please input Y or N ", scanner);
+            if (isSure == 'y') {
+                System.out.println("+".repeat(60));
+                System.out.println("# " + Arrays.toString(userInput) + " booked successfully.");
+                System.out.println("+".repeat(60));
+            }
+        }else {
+            System.out.println("+".repeat(60));
+            System.out.println("# seat already booked");
+            System.out.println("+".repeat(60));
+        }
+    }
+
+//    show all hall
+    public static void showAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
+        // morning
+        System.out.println("# Hall information");
+        System.out.println("+".repeat(60));
+        System.out.println("# Hall - Morning");
+        for (int i = 0; i<morningHall.length; i++){
+            for (int j= 0; j<morningHall[i].length; j++){
+                char aphabet = (char) ('A' + i ) ;
+                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+morningHall[i][j]+"|\t");
+            }
+            System.out.println();
+        }
+        System.out.println("+".repeat(60));
+
+//        afternoon
+        System.out.println("# Hall - Afternoon");
+        for (int i = 0; i<afternoonHall.length; i++){
+            for (int j= 0; j<afternoonHall[i].length; j++){
+                char aphabet = (char) ('A' + i ) ;
+                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+afternoonHall[i][j]+"|\t");
+            }
+            System.out.println();
+        }
+        System.out.println("+".repeat(60));
+
+//       night
+        System.out.println("# Hall - Night");
+        for (int i = 0; i<nightHall.length; i++){
+            for (int j= 0; j<nightHall[i].length; j++){
+                char aphabet = (char) ('A' + i ) ;
+                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+nightHall[i][j]+"|\t");
+            }
+            System.out.println();
+        }
+        System.out.println("+".repeat(60));
     }
 
 
-    public static void mainMenu(){
+    public static void mainMenu () {
         System.out.print("""
-                [[ Application Menu ]]
-                <A> Booking
-                <B> Hall
-                <C> Showtime
-                <D> Reboot Showtime
-                <E> History
-                <F> Exit
-                """);
+                    [[ Application Menu ]]
+                    <A> Booking
+                    <B> Hall
+                    <C> Showtime
+                    <D> Reboot Showtime
+                    <E> History
+                    <F> Exit
+                    """);
     }
 
-     public static void showTimeMenu(){
+    public static void showTimeMenu () {
         System.out.print("""
-                +++++++++++++++++++++++++++++++++++++++++++++++
-                # Daily Showtime of CSTAD HALL:
-                # A) Morning (10:00AM - 12:30PM)
-                # B) Afternoon (03:00PM - 50:30PM)
-                # C) Night (07:00PM - 09:30PM)
-                ++++++++++++++++++++++++++++++++++++++++++++++
-                """);
+                    +++++++++++++++++++++++++++++++++++++++++++++++
+                    # Daily Showtime of CSTAD HALL:
+                    # A) Morning (10:00AM - 12:30PM)
+                    # B) Afternoon (03:00PM - 50:30PM)
+                    # C) Night (07:00PM - 09:30PM)
+                    ++++++++++++++++++++++++++++++++++++++++++++++
+                    """);
     }
-
-
 }
+
