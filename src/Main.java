@@ -4,33 +4,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
-
-
-
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-
         Integer row = validateInputNumber("> Config total rows in hall : ","only number from 1-9",input);
         Integer col = validateInputNumber("> Config total cols in hall : ","only number from 1-9",input);
-
         String[][] morningHall = new String[row][col];
         String[][] afternoonHall = new String[row][col];
         String[][] nightHall = new String[row][col];
-        initHall(morningHall);
-        initHall(afternoonHall);
-        initHall(nightHall);
-
-
-
+        initializeAllHall(morningHall,afternoonHall,nightHall);
         Character ch;
         do {
             mainMenu();
-            ch = validateInputChar("Choose option : ","wrong command",input);
+            ch = validateInputChar("> Choose option : ","+".repeat(60)+"\n# Option must be alphabet from A-F\n"+"+".repeat(60),input);
             switch (ch){
                 case 'a' -> booking(morningHall,afternoonHall,nightHall);
                 case 'b' -> showAllHall(morningHall,afternoonHall,nightHall);
                 case 'c' -> showTimeMenu();
+                case 'd' -> rebootAllHall(morningHall,afternoonHall,nightHall);
                 case 'f' -> System.exit(0);
+                default -> System.out.println("+".repeat(60)+"\n# Please input option from A-F\n"+"+".repeat(60));
             }
 
         }while (!(ch.equals('f')));
@@ -51,6 +43,7 @@ public class Main {
         }
     }
 
+
 //    validate number
     public static Integer validateInputNumber(String message, String error, Scanner input){
         while (true){
@@ -68,6 +61,7 @@ public class Main {
                 System.out.println(error);
         }
     }
+
 
 //    Booking seat
     public static void booking(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
@@ -90,7 +84,16 @@ public class Main {
             return nightHall;
     }
 
-    //   Initialize hall
+
+    //   initAll
+    public static void initializeAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
+        initHall(morningHall);
+        initHall(afternoonHall);
+        initHall(nightHall);
+    }
+
+
+    //   Init hall
     public static void initHall(String[][] hall){
         for (int i = 0; i<hall.length; i++){
             for (int j = 0; j<hall[i].length; j++){
@@ -98,8 +101,18 @@ public class Main {
             }
         }
     }
+    // rebootHall
+    public static void rebootAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
+        initHall(morningHall);
+        initHall(afternoonHall);
+        initHall(nightHall);
+        System.out.println("+".repeat(60));
+        System.out.println("# start rebooting the hall.........");
+        System.out.println("# Rebooted successfully.");
+        System.out.println("+".repeat(60));
+    }
 
-//  display Hall
+    //  display Hall
     public static void displayOneHall(String[][] hall){
         System.out.println("+".repeat(60));
         for (int i = 0; i<hall.length; i++){
@@ -177,7 +190,8 @@ public class Main {
             }
         }else {
             System.out.println("+".repeat(60));
-            System.out.println("# seat already booked");
+            System.out.println("!! "+ Arrays.toString(userInput) +" already booked!");
+            System.out.println("!! "+ Arrays.toString(userInput) +" cannot be booked because of unavailability!");
             System.out.println("+".repeat(60));
         }
     }
