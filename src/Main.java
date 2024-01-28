@@ -51,8 +51,11 @@ public class Main {
         displayOneHall(hall);
         String[] userInput = singleAndMultipleSelect();
         String seat = Arrays.toString(userInput);
-        String userID = "";
+        String userID = validateInputString("> Please enter userID : ", "!! ID can not be special character!","[a-zA-Z0-9]+", scanner);
         String history = "";
+        char isSure = validateInputChar("Are you sure to book? (Y/N) : ", "please input Y or N ","[yYNn]+", scanner);
+        String[] newHistory = Arrays.copyOf(currentHistory, currentHistory.length + 1);
+        boolean isTrue = true;
         for (String input : userInput) {
             String getUserInput = input.replaceAll("-", "");
             int number = Integer.parseInt(getUserInput.replaceAll("[^0-9]", ""));
@@ -68,25 +71,21 @@ public class Main {
                             System.out.println("+".repeat(60));
                             break;
                         } else {
-                            userID = validateInputString("> Please enter userID : ", "!! ID can not be special character!","[a-zA-Z0-9]+", scanner);
-                            char isSure = validateInputChar("Are you sure to book? (Y/N) : ", "please input Y or N ","[yYNn]+", scanner);
                             if (isSure == 'y') {
                                 hall[i][j] = "BO";
-                                history = addToHistory(seat, userID , choice);
                                 // Update the booking history array
-                                String[] newHistory = Arrays.copyOf(currentHistory, currentHistory.length + 1);
+                                history = addToHistory(seat, userID , choice);
                                 newHistory[newHistory.length - 1] = history;
-                                System.out.println("+".repeat(60));
-                                System.out.println("# " + seat + " booked successfully.");
-                                System.out.println("+".repeat(60));
-                                return newHistory;
                             }
                         }
                     }
                 }
             }
         }
-        return null;
+        System.out.println("+".repeat(60));
+        System.out.println("# " + seat + " booked successfully.");
+        System.out.println("+".repeat(60));
+        return newHistory;
     }
 
     // Display booking history
@@ -185,9 +184,8 @@ public class Main {
                     # SINGLE : C-1
                     # Multiple (Separate by comma (,)) : C-1,C-2
                     """);
-            String userInput = validateInputString("> Please select available seat : ","# !! Please input base on Instruction !","([A-C]-[1-9],)*[A-C]-[1-9]",input);
+            String userInput = validateInputString("> Please select available seat : ","# !! Please input base on Instruction !","([A-Z]-[1-9],)*[A-Z]-[1-9]",input);
             // Split the input string by commas
-            System.out.println(userInput);
             String[] substrings = userInput.split(",");
 
             // Add the substrings to the array
