@@ -1,3 +1,5 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -13,6 +15,7 @@ public class Main {
         String[][] nightHall = new String[row][col];
         initializeAllHall(morningHall,afternoonHall,nightHall);
         Character ch;
+
         do {
             mainMenu();
             ch = validateInputChar("> Choose option : ","+".repeat(60)+"\n# Option must be alphabet from A-F\n"+"+".repeat(60),input);
@@ -28,7 +31,6 @@ public class Main {
         }while (!(ch.equals('f')));
 
     }
-
     //  validate char
     public static Character validateInputChar(String message, String error, Scanner input){
         while (true){
@@ -42,8 +44,6 @@ public class Main {
                 System.out.println(error);
         }
     }
-
-
 //    validate number
     public static Integer validateInputNumber(String message, String error, Scanner input){
         while (true){
@@ -61,21 +61,31 @@ public class Main {
                 System.out.println(error);
         }
     }
-
-
+    // validate String
+    public static String validateInputString(String message, String error, String patternString, Scanner input ){
+        while (true){
+            System.out.print(message);
+            String choice = input.nextLine();
+            Pattern pattern = Pattern.compile(patternString);
+            Matcher matcher = pattern.matcher(choice);
+            if(matcher.matches()){
+                return choice;
+            }
+            else
+                System.out.println(error);
+        }
+    }
 //    Booking seat
-    public static void booking(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
+    public static void booking(String[][] morningHall, String[][] afternoonHall, String[][] nightHall ){
         Scanner input = new Scanner(System.in);
         showTimeMenu();
-        String[][] hall = getHall(morningHall,afternoonHall,nightHall);
-        displayOneHall(hall);
-        validateBooking(hall);
-    }
-
-//  getOneHall
-    public static String[][] getHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
-        Scanner input = new Scanner(System.in);
         Character choice = validateInputChar("> Please select show time (A | B | C): ","Please input A-B-C",input);
+        String[][] hall = getHall(morningHall,afternoonHall,nightHall, choice);
+        displayOneHall(hall);
+        validateBooking(hall, choice);
+    }
+//  getOneHall
+    public static String[][] getHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall , Character choice){
         if(choice.equals('a')){
             return morningHall;
         } else if (choice.equals('b')) {
@@ -83,16 +93,12 @@ public class Main {
         }else
             return nightHall;
     }
-
-
     //   initAll
     public static void initializeAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
         initHall(morningHall);
         initHall(afternoonHall);
         initHall(nightHall);
     }
-
-
     //   Init hall
     public static void initHall(String[][] hall){
         for (int i = 0; i<hall.length; i++){
@@ -103,30 +109,26 @@ public class Main {
     }
     // rebootHall
     public static void rebootAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
-        initHall(morningHall);
-        initHall(afternoonHall);
-        initHall(nightHall);
-        System.out.println("+".repeat(60));
-        System.out.println("# start rebooting the hall.........");
-        System.out.println("# Rebooted successfully.");
-        System.out.println("+".repeat(60));
-    }
+        Scanner scanner = new Scanner(System.in);
+        char isSure = validateInputChar("Are you sure to reboot hall ? (Y/N) : ", "please input Y or N ", scanner);
+        if (isSure == 'y') {
+            initHall(morningHall);
+            initHall(afternoonHall);
+            initHall(nightHall);
+            System.out.println("+".repeat(60));
+            System.out.println("# start rebooting the hall.........");
+            System.out.println("# Rebooted successfully.");
+            System.out.println("+".repeat(60));
+        }
 
+    }
     //  display Hall
     public static void displayOneHall(String[][] hall){
         System.out.println("+".repeat(60));
-        for (int i = 0; i<hall.length; i++){
-            for (int j= 0; j<hall[i].length; j++){
-                char aphabet = (char) ('A' + i ) ;
-                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+hall[i][j]+"|\t");
-            }
-            System.out.println();
-        }
-        System.out.println("+".repeat(60));
+        loopHallEvent(hall);
     }
-
 //   chooseSeat
-    public static String[] singleAndMultipleSelect(String[][] hall){
+    public static String[] singleAndMultipleSelect(){
         Scanner input = new Scanner(System.in);
         String[] stringArray = new String[0];
         // Input strings dynamically
@@ -136,8 +138,7 @@ public class Main {
                     # SINGLE : C-1
                     # Multiple (Separate by comma (,)) : C-1,C-2
                     """);
-            System.out.print("> Please select available seat : ");
-            String userInput = input.nextLine();
+            String userInput = validateInputString("> Please select available seat : ","# !! Please input base on Instruction !","[A-Z]+[-]+[1-9]",input);
             // Split the input string by commas
             String[] substrings = userInput.split(",");
 
@@ -156,85 +157,80 @@ public class Main {
         }
         return stringArray;
     }
-
     // validate booking
-    public static void validateBooking(String[][] hall) {
+    public static void validateBooking(String[][] hall , Character choice ) {
+        String[] bookedHistories = new String[0];
         Scanner scanner = new Scanner(System.in);
-        String[] userInput = singleAndMultipleSelect(hall);
-        boolean isBook = false;
+        String[] userInput = singleAndMultipleSelect();
         for (String input : userInput) {
             String getUserInput = input.replaceAll("-", "");
-            Integer number = Integer.parseInt(getUserInput.replaceAll("[^0-9]", ""));
+            int number = Integer.parseInt(getUserInput.replaceAll("[^0-9]", ""));
             char letter = getUserInput.replaceAll("[^a-zA-Z]", "").charAt(0);
             for (int i = 0; i < hall.length; i++) {
                 for (int j = 0; j < hall[i].length; j++) {
-                    char aphabet = (char) ('A' + i);
-                    if (aphabet == letter && (number -1 ) == j) {
+                    char alphabet = (char) ('A' + i);
+                    if (alphabet == letter && (number -1 ) == j) {
                         if (hall[i][j].equals("BO")) {
-                            isBook = false;
+                            System.out.println("+".repeat(60));
+                            System.out.println("!! ["+alphabet+"-"+(1+j)+"] already booked!");
+                            System.out.println("!! ["+alphabet+"-"+(1+j)+"] cannot be booked because of unavailability!");
+                            System.out.println("+".repeat(60));
                             break;
                         } else {
-                            hall[i][j] = "BO";
-                            isBook = true;
+                            String userID = validateInputString("> Please enter userID : ", "!! ID can not be special character!","[a-zA-Z0-9]+", scanner);
+                            char isSure = validateInputChar("Are you sure to book? (Y/N) : ", "please input Y or N ", scanner);
+                            if (isSure == 'y') {
+                                hall[i][j] = "BO";
+                                String seat = alphabet+"-"+(1+j);
+                                addToHistory(seat, userID , choice , bookedHistories);
+                                System.out.println("+".repeat(60));
+                                System.out.println("# " + Arrays.toString(userInput) + " booked successfully.");
+                                System.out.println("+".repeat(60));
+                            }
                         }
                     }
                 }
             }
         }
-        if (isBook) {
-            char isSure = validateInputChar("Are you sure to book? (Y/N)", "please input Y or N ", scanner);
-            if (isSure == 'y') {
-                System.out.println("+".repeat(60));
-                System.out.println("# " + Arrays.toString(userInput) + " booked successfully.");
-                System.out.println("+".repeat(60));
-            }
-        }else {
-            System.out.println("+".repeat(60));
-            System.out.println("!! "+ Arrays.toString(userInput) +" already booked!");
-            System.out.println("!! "+ Arrays.toString(userInput) +" cannot be booked because of unavailability!");
-            System.out.println("+".repeat(60));
-        }
     }
+    // add to history
+    public static void addToHistory(String seat, String userID , Character choice, String[] bookedHistories){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/y H:mm");
+        String formattedDateTime = localDateTime.format(formatter);
 
-//    show all hall
+        String historyEntry = String.format(
+                "#SEATS: [" + seat + "]" +
+                "\n#HALL         #USER.ID               #CREATED AT" +
+                "\nHALL " + choice + "        " + userID + "                " + formattedDateTime
+        );
+        bookedHistories = Arrays.copyOf(bookedHistories, bookedHistories.length + 1 );
+        bookedHistories[bookedHistories.length - 1] = historyEntry;
+    }
+    //    show all hall
     public static void showAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
         // morning
         System.out.println("# Hall information");
         System.out.println("+".repeat(60));
         System.out.println("# Hall - Morning");
-        for (int i = 0; i<morningHall.length; i++){
-            for (int j= 0; j<morningHall[i].length; j++){
-                char aphabet = (char) ('A' + i ) ;
-                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+morningHall[i][j]+"|\t");
-            }
-            System.out.println();
-        }
-        System.out.println("+".repeat(60));
-
+        loopHallEvent(morningHall);
 //        afternoon
         System.out.println("# Hall - Afternoon");
-        for (int i = 0; i<afternoonHall.length; i++){
-            for (int j= 0; j<afternoonHall[i].length; j++){
-                char aphabet = (char) ('A' + i ) ;
-                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+afternoonHall[i][j]+"|\t");
-            }
-            System.out.println();
-        }
-        System.out.println("+".repeat(60));
-
+        loopHallEvent(afternoonHall);
 //       night
         System.out.println("# Hall - Night");
-        for (int i = 0; i<nightHall.length; i++){
-            for (int j= 0; j<nightHall[i].length; j++){
-                char aphabet = (char) ('A' + i ) ;
-                System.out.print("  |"+aphabet+"-"+(1+j)+"::"+nightHall[i][j]+"|\t");
+        loopHallEvent(nightHall);
+    }
+    public static void loopHallEvent(String[][] hall) {
+        for (int i = 0; i<hall.length; i++){
+            for (int j= 0; j<hall[i].length; j++){
+                char alphabet = (char) ('A' + i ) ;
+                System.out.print("  |"+alphabet+"-"+(1+j)+"::"+hall[i][j]+"|\t");
             }
             System.out.println();
         }
         System.out.println("+".repeat(60));
     }
-
-
     public static void mainMenu () {
         System.out.print("""
                     [[ Application Menu ]]
@@ -246,7 +242,6 @@ public class Main {
                     <F> Exit
                     """);
     }
-
     public static void showTimeMenu () {
         System.out.print("""
                     +++++++++++++++++++++++++++++++++++++++++++++++
