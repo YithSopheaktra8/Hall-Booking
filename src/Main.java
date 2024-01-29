@@ -27,9 +27,9 @@ public class Main {
         String[][] morningHall = new String[row][col];
         String[][] afternoonHall = new String[row][col];
         String[][] nightHall = new String[row][col];
+        String[] bookingHistory = new String[0];
         initializeAllHall(morningHall,afternoonHall,nightHall);
         char ch;
-        String[] bookingHistory = new String[0];
         do {
             mainMenu();
             ch = validateInputChar("> Choose option : ","+".repeat(60)+"\n# Option must be alphabet from A-F\n"+"+".repeat(60),"[a-fA-F]+",input);
@@ -37,10 +37,7 @@ public class Main {
                 case 'a' -> bookingHistory = booking(morningHall,afternoonHall,nightHall,bookingHistory);
                 case 'b' -> showAllHall(morningHall,afternoonHall,nightHall);
                 case 'c' -> showTimeMenu();
-                case 'd' -> {
-                    rebootAllHall(morningHall,afternoonHall,nightHall);
-                    bookingHistory[0] = null;
-                }
+                case 'd' -> rebootAllHall(morningHall,afternoonHall,nightHall , bookingHistory);
                 case 'e' -> displayBookingHistory(bookingHistory);
                 case 'f' -> {
                     System.out.println("Good bye See you again!!");
@@ -103,22 +100,24 @@ public class Main {
 
     // Display booking history
     public static void displayBookingHistory(String[] bookingHistory) {
+        Boolean isFound = false;
         System.out.println("+".repeat(60));
         System.out.println("# Booking History:");
-        if(bookingHistory[0] ==  null){
+        for(int i = 0; i<bookingHistory.length; i++){
+                if(bookingHistory[i] != ""){
+                    System.out.println("-".repeat(60));
+                    System.out.println(bookingHistory[i]);
+                    System.out.println("-".repeat(60));
+                    System.out.println("+".repeat(60));
+                    isFound = true;
+                }
+        }
+        if(!isFound){
             System.out.println("-".repeat(60));
             System.out.println("                There is no history");
             System.out.println("-".repeat(60));
             System.out.println("+".repeat(60));
-        }else {
-            for (String history : bookingHistory) {
-                System.out.println("-".repeat(60));
-                System.out.println(history);
-                System.out.println("-".repeat(60));
-                System.out.println("+".repeat(60));
-            }
         }
-
     }
 
     // add to history
@@ -126,7 +125,6 @@ public class Main {
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/y hh:mm");
         String formattedDateTime = localDateTime.format(formatter);
-
         char hall = Character.toUpperCase(choice);
         return String.format(
                 "#SEATS: [" + seat + "]" +
@@ -162,13 +160,14 @@ public class Main {
         }
     }
     // rebootHall
-    public static void rebootAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
+    public static void rebootAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall, String[] histories){
         Scanner scanner = new Scanner(System.in);
         char isSure = validateInputChar("Are you sure to reboot hall ? (Y/N) : ", "please input Y or N ","[yYnN]+", scanner);
         if (isSure == 'y') {
             initHall(morningHall);
             initHall(afternoonHall);
             initHall(nightHall);
+            clearHistory(histories);
             System.out.println("+".repeat(60));
             System.out.println("# start rebooting the hall.........");
             System.out.println("# Rebooted successfully.");
@@ -176,6 +175,12 @@ public class Main {
         }
 
     }
+
+    //  clear history
+    public static void clearHistory(String[] histories){
+        Arrays.fill(histories,"");
+    }
+
 
     //  display Hall
     public static void displayOneHall(String[][] hall){
