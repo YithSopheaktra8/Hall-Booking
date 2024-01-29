@@ -1,7 +1,9 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,7 +61,7 @@ public class Main {
         displayOneHall(hall);
         String[] userInput = singleAndMultipleSelect();
         String seat = Arrays.toString(userInput);
-        String userID = validateInputString("> Please enter userID : ", "!! ID can not be special character!","[a-zA-Z0-9]+", scanner);
+        String userName = validateInputString("> Please enter userName : ", "!! Name can not be special character!","[a-zA-Z]+", scanner);
         char isSure = validateInputChar("Are you sure to book? (Y/N) : ", "please input Y or N ","[yYNn]+", scanner);
         String[] newHistory = Arrays.copyOf(currentHistory, currentHistory.length + 1);
         boolean isTrue = true;
@@ -82,7 +84,7 @@ public class Main {
                             if (isSure == 'y') {
                                 hall[i][j] = "BO";
                                 // Update the booking history array
-                                String history = addToHistory(seat, userID , choice);
+                                String history = addToHistory(seat, userName , choice);
                                 newHistory[newHistory.length - 1] = history;
                             }
                         }
@@ -100,17 +102,17 @@ public class Main {
 
     // Display booking history
     public static void displayBookingHistory(String[] bookingHistory) {
-        Boolean isFound = false;
+        boolean isFound = false;
         System.out.println("+".repeat(60));
         System.out.println("# Booking History:");
-        for(int i = 0; i<bookingHistory.length; i++){
-                if(bookingHistory[i] != ""){
-                    System.out.println("-".repeat(60));
-                    System.out.println(bookingHistory[i]);
-                    System.out.println("-".repeat(60));
-                    System.out.println("+".repeat(60));
-                    isFound = true;
-                }
+        for (String s : bookingHistory) {
+            if (!Objects.equals(s, "")) {
+                System.out.println("-".repeat(60));
+                System.out.println(s);
+                System.out.println("-".repeat(60));
+                System.out.println("+".repeat(60));
+                isFound = true;
+            }
         }
         if(!isFound){
             System.out.println("-".repeat(60));
@@ -121,19 +123,21 @@ public class Main {
     }
 
     // add to history
-    public static String addToHistory(String seat, String userID , Character choice){
+    public static String addToHistory(String seat, String userName , Character choice){
+        UUID uuid = UUID.randomUUID();
+        String uniqueID =uuid.toString();
         LocalDateTime localDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/y hh:mm");
         String formattedDateTime = localDateTime.format(formatter);
         char hall = Character.toUpperCase(choice);
         return String.format(
-                "#SEATS: [" + seat + "]" +
-                        "\n#HALL         #USER.ID               #CREATED AT" +
-                        "\nHALL " + hall + "        " + userID + "                " + formattedDateTime
+                "#SEATS: " + seat  +
+                        "\n#BookingID : " +uniqueID+
+                        "\n#HALL         #USER.NAME               #CREATED AT" +
+                        "\nHALL " + hall + "        " + userName + "                " + formattedDateTime
         );
     }
-
-
+    
 //  getOneHall
     public static String[][] getHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall , Character choice){
         if(choice.equals('a')){
