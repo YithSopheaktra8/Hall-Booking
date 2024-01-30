@@ -191,14 +191,13 @@ public class Main {
     public static void clearHistory(String[] histories){
         Arrays.fill(histories,"");
     }
-
-
+    
     //  display Hall
     public static void displayOneHall(String[][] hall){
         System.out.println("+".repeat(60));
         loopHallEvent(hall);
     }
-//   chooseSeat
+    //   chooseSeat
     public static String[] singleAndMultipleSelect(){
         Scanner input = new Scanner(System.in);
         String[] stringArray = new String[0];
@@ -236,10 +235,10 @@ public class Main {
         System.out.println("+".repeat(60));
         System.out.println("# Hall - Morning");
         loopHallEvent(morningHall);
-//        afternoon
+        //  afternoon
         System.out.println("# Hall - Afternoon");
         loopHallEvent(afternoonHall);
-//       night
+        //  night
         System.out.println("# Hall - Night");
         loopHallEvent(nightHall);
     }
