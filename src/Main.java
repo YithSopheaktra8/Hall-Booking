@@ -10,18 +10,13 @@ import java.util.regex.Pattern;
 public class Main {
     public static void main(String[] args) {
         System.out.println("""
-                 ██████╗███████╗████████╗ █████╗ ██████╗     ██████╗     ██████╗                           \s
-                ██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗    ╚════██╗   ██╔═████╗                          \s
-                ██║     ███████╗   ██║   ███████║██║  ██║     █████╔╝   ██║██╔██║                          \s
-                ██║     ╚════██║   ██║   ██╔══██║██║  ██║    ██╔═══╝    ████╔╝██║                          \s
-                ╚██████╗███████║   ██║   ██║  ██║██████╔╝    ███████╗██╗╚██████╔╝                          \s
-                 ╚═════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═════╝     ╚══════╝╚═╝ ╚═════╝                           \s
-                                                                                                           \s
                 ██╗  ██╗ █████╗ ██╗     ██╗         ██████╗  ██████╗  ██████╗ ██╗  ██╗██╗███╗   ██╗ ██████╗\s
                 ██║  ██║██╔══██╗██║     ██║         ██╔══██╗██╔═══██╗██╔═══██╗██║ ██╔╝██║████╗  ██║██╔════╝\s
                 ███████║███████║██║     ██║         ██████╔╝██║   ██║██║   ██║█████╔╝ ██║██╔██╗ ██║██║  ███╗
                 ██╔══██║██╔══██║██║     ██║         ██╔══██╗██║   ██║██║   ██║██╔═██╗ ██║██║╚██╗██║██║   ██║
                 ██║  ██║██║  ██║███████╗███████╗    ██████╔╝╚██████╔╝╚██████╔╝██║  ██╗██║██║ ╚████║╚██████╔╝
+                ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝ ╚═════╝\s
+                                                                                                          \s
                 """);
         Scanner input = new Scanner(System.in);
         Integer row = validateInputNumber("> Config total rows in hall : ","only number from 1-9",input);
@@ -52,7 +47,7 @@ public class Main {
 
     }
 
-//    Booking seat
+    //    Booking seat
     public static String[] booking(String[][] morningHall, String[][] afternoonHall, String[][] nightHall , String[] currentHistory){
         Scanner scanner = new Scanner(System.in);
         showTimeMenu();
@@ -61,10 +56,11 @@ public class Main {
         displayOneHall(hall);
         String[] userInput = singleAndMultipleSelect();
         String seat = Arrays.toString(userInput);
-        String userName = validateInputString("> Please enter userName : ", "!! Name can not be special character!","[a-zA-Z]+", scanner);
-        char isSure = validateInputChar("Are you sure to book? (Y/N) : ", "please input Y or N ","[yYNn]+", scanner);
         String[] newHistory = Arrays.copyOf(currentHistory, currentHistory.length + 1);
         boolean isTrue = true;
+        boolean validateInputUser = true;
+        char isSure = 0;
+        String userName = "";
         for (String input : userInput) {
             String getUserInput = input.replaceAll("-", "");
             int number = Integer.parseInt(getUserInput.replaceAll("[^0-9]", ""));
@@ -78,14 +74,25 @@ public class Main {
                             System.out.println("!! ["+alphabet+"-"+(1+j)+"] already booked!");
                             System.out.println("!! ["+alphabet+"-"+(1+j)+"] cannot be booked because of unavailability!");
                             System.out.println("+".repeat(60));
-                            isTrue =false;
+                            isTrue = false;
                             break;
                         } else {
+                            if(validateInputUser){
+                                userName = validateInputString("> Please enter userName : ", "!! Name can not be special character!","[a-zA-Z\\s]+", scanner);
+                                isSure = validateInputChar("> Are you sure to book? (Y/N) : ", "!! please input Y or N ","[yYNn]+", scanner);
+                                validateInputUser = false;
+                            }
                             if (isSure == 'y') {
                                 hall[i][j] = "BO";
                                 // Update the booking history array
                                 String history = addToHistory(seat, userName , choice);
                                 newHistory[newHistory.length - 1] = history;
+                            }else {
+                                System.out.println("+".repeat(60));
+                                System.out.println("> Cancel Booking...........");
+                                System.out.println("> Done cancel");
+                                System.out.println("+".repeat(60));
+                                isTrue = false;
                             }
                         }
                     }
@@ -106,7 +113,7 @@ public class Main {
         System.out.println("+".repeat(60));
         System.out.println("# Booking History:");
         for (String s : bookingHistory) {
-            if (!Objects.equals(s, "")) {
+            if (!Objects.equals(s, "") && s != null) {
                 System.out.println("-".repeat(60));
                 System.out.println(s);
                 System.out.println("-".repeat(60));
@@ -134,8 +141,8 @@ public class Main {
                 "#SEATS: " + seat  +
                         "\n#BookingID : " +uniqueID+
                         "\n#HALL         #USER.NAME               #CREATED AT" +
-                        "\nHALL " + hall + "        " + userName + "                " + formattedDateTime
-        );
+                        "\nHALL %-8s %-23s  %-20s  "
+        ,hall,userName,formattedDateTime);
     }
     
 //  getOneHall
@@ -202,7 +209,7 @@ public class Main {
                     # SINGLE : C-1
                     # Multiple (Separate by comma (,)) : C-1,C-2
                     """);
-            String userInput = validateInputString("> Please select available seat : ","# !! Please input base on Instruction !","([A-Z]-[1-9],)*[A-Z]-[1-9]",input);
+            String userInput = validateInputString("> Please select available seat : ","# !! Please input base on Instruction !","([a-zA-Z]-[1-9],)*[a-zA-Z]-[1-9]",input).toUpperCase();
             // Split the input string by commas
             String[] substrings = userInput.split(",");
 
