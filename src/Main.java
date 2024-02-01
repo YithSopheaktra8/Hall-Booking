@@ -40,11 +40,9 @@ public class Main {
                     System.out.println("Good bye See you again!!");
                     System.exit(0);
                 }
-
                 default -> System.out.println("+".repeat(60)+"\n# Please input option from A-F\n"+"+".repeat(60));
             }
         }while (true);
-
     }
 
     //    Booking seat
@@ -155,14 +153,12 @@ public class Main {
             return nightHall;
     }
 
-
     //   initAll
     public static void initializeAllHall(String[][] morningHall, String[][] afternoonHall, String[][] nightHall){
         initHall(morningHall);
         initHall(afternoonHall);
         initHall(nightHall);
     }
-
 
     //   Init hall
     public static void initHall(String[][] hall){
@@ -191,7 +187,6 @@ public class Main {
     public static void clearHistory(String[] histories){
         Arrays.fill(histories,"");
     }
-
 
     //  display Hall
     public static void displayOneHall(String[][] hall){
@@ -243,6 +238,7 @@ public class Main {
         System.out.println("# Hall - Night");
         loopHallEvent(nightHall);
     }
+
     public static void loopHallEvent(String[][] hall) {
         for (int i = 0; i<hall.length; i++){
             for (int j= 0; j<hall[i].length; j++){
@@ -253,6 +249,7 @@ public class Main {
         }
         System.out.println("+".repeat(60));
     }
+
     //  validate char
     public static Character validateInputChar(String message, String error, String stringPattern ,Scanner input){
         while (true){
@@ -284,6 +281,7 @@ public class Main {
                 System.out.println(error);
         }
     }
+
     // validate String
     public static String validateInputString(String message, String error, String patternString, Scanner input ){
         while (true){
@@ -298,6 +296,7 @@ public class Main {
                 System.out.println(error);
         }
     }
+
     public static void mainMenu () {
         System.out.print("""
                     [[ Application Menu ]]
@@ -309,6 +308,7 @@ public class Main {
                     <F> Exit
                     """);
     }
+
     public static void showTimeMenu () {
         System.out.print("""
                     +++++++++++++++++++++++++++++++++++++++++++++++
