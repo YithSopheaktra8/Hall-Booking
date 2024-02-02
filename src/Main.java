@@ -140,7 +140,7 @@ public class Main {
                         "\n#BookingID : " +uniqueID+
                         "\n#HALL         #USER.NAME               #CREATED AT" +
                         "\nHALL %-8s %-23s  %-20s  "
-        ,hall,userName,formattedDateTime);
+        ,hall,userName.toUpperCase(),formattedDateTime);
     }
     
 //  getOneHall
@@ -195,7 +195,6 @@ public class Main {
     //   chooseSeat
     public static String[] singleAndMultipleSelect(){
         Scanner input = new Scanner(System.in);
-        String[] stringArray = new String[0];
         // Input strings dynamically
         while (true) {
             System.out.print("""
@@ -207,20 +206,11 @@ public class Main {
             // Split the input string by commas
             String[] substrings = userInput.split(",");
 
-            // Add the substrings to the array
-            String[] newArray = new String[stringArray.length + substrings.length];
-            System.arraycopy(stringArray, 0, newArray, 0, stringArray.length);
-            System.arraycopy(substrings, 0, newArray, stringArray.length, substrings.length);
-
-            // Update the reference to the new array
-            stringArray = newArray;
-
             // Check if the user wants to stop (pressing Enter key)
             if (!(userInput.isEmpty())) {
-                break;
+                return substrings;
             }
         }
-        return stringArray;
     }
 
     //    show all hall

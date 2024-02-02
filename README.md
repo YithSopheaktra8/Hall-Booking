@@ -13,6 +13,8 @@ Clone this project [https://github.com/YithSopheaktra8/Hall-Booking.git]
     - Do not use the Class and Object or Collection framework to store data!
     - Use RegEx to validate (Don’t use Exceptions)!
     - Create an idea to use methods to code your application well.
+    - Use only method and parameter no data memeber.
+    - History of booking increase dynamically
 
 ## Project Functionalities
     1. Hall Booking
